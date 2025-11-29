@@ -78,3 +78,12 @@ src/
 │ └── shared/
 │ └── Footer.tsx ← Used in landing page
 _/
+
+<!-- api -->
+
+// Tasks
+POST /api/tasks → Create task
+GET /api/tasks → Get all tasks (with filters)
+GET /api/tasks/[id] → Get single task
+PATCH /api/tasks/[id] → Update task
+DELETE /api/tasks/[id] → Delete task

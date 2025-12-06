@@ -25,37 +25,37 @@ export default function TaskFilters({ projects }: TaskFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const currentStatus = searchParams.get("status") || "all";
-  const currentPriority = searchParams.get("priority") || "all";
-  const currentProject = searchParams.get("project") || "all";
+  const currentStatus = searchParams.get("status") || "";
+  const currentPriority = searchParams.get("priority") || "";
+  const currentProject = searchParams.get("project") || "";
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === "all") {
+
+    if (!value || value === "all") {
       params.delete(key);
     } else {
       params.set(key, value);
     }
-    router.push(`/tasks?${params.toString()}`);
+
+    const queryString = params.toString();
+    router.push(`/tasks${queryString ? `?${queryString}` : ""}`);
   };
 
   const clearFilters = () => {
     router.push("/tasks");
   };
 
-  const hasFilters =
-    currentStatus !== "all" ||
-    currentPriority !== "all" ||
-    currentProject !== "all";
+  const hasFilters = currentStatus || currentPriority || currentProject;
 
   return (
     <div className="flex items-center gap-4 flex-wrap">
       <Select
-        value={currentStatus}
+        value={currentStatus || "all"}
         onValueChange={(v) => updateFilter("status", v)}
       >
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Status" />
+          <SelectValue placeholder="All Status" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Status</SelectItem>
@@ -66,11 +66,11 @@ export default function TaskFilters({ projects }: TaskFiltersProps) {
       </Select>
 
       <Select
-        value={currentPriority}
+        value={currentPriority || "all"}
         onValueChange={(v) => updateFilter("priority", v)}
       >
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Priority" />
+          <SelectValue placeholder="All Priorities" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Priorities</SelectItem>
@@ -81,11 +81,11 @@ export default function TaskFilters({ projects }: TaskFiltersProps) {
       </Select>
 
       <Select
-        value={currentProject}
+        value={currentProject || "all"}
         onValueChange={(v) => updateFilter("project", v)}
       >
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Project" />
+          <SelectValue placeholder="All Projects" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Projects</SelectItem>
@@ -108,6 +108,22 @@ export default function TaskFilters({ projects }: TaskFiltersProps) {
           <X className="h-4 w-4 mr-2" />
           Clear Filters
         </Button>
+      )}
+
+      {hasFilters && (
+        <div className="text-sm text-muted-foreground">
+          {[
+            currentStatus && `Status: ${currentStatus}`,
+            currentPriority && `Priority: ${currentPriority}`,
+            currentProject &&
+              `Project: ${
+                projects.find((p) => p._id === currentProject)?.name ||
+                "Unknown"
+              }`,
+          ]
+            .filter(Boolean)
+            .join(" • ")}
+        </div>
       )}
     </div>
   );
